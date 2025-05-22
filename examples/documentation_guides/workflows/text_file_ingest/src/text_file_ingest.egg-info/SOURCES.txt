@@ -1,0 +1,10 @@
+pyproject.toml
+src/text_file_ingest/__init__.py
+src/text_file_ingest/register.py
+src/text_file_ingest/text_file_ingest_function.py
+src/text_file_ingest.egg-info/PKG-INFO
+src/text_file_ingest.egg-info/SOURCES.txt
+src/text_file_ingest.egg-info/dependency_links.txt
+src/text_file_ingest.egg-info/entry_points.txt
+src/text_file_ingest.egg-info/requires.txt
+src/text_file_ingest.egg-info/top_level.txt

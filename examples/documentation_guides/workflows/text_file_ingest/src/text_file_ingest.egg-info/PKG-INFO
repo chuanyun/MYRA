@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: text_file_ingest
+Version: 0.1.0
+Summary: Ingest data from text files
+Keywords: ai,rag,agents
+Classifier: Programming Language :: Python
+Requires-Python: <3.13,>=3.11
+Requires-Dist: aiqtoolkit[langchain]~=1.2
+Requires-Dist: bs4==0.0.2
+Requires-Dist: faiss-cpu==1.9.0

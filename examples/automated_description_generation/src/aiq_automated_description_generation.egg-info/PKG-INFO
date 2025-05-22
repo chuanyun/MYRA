@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: aiq_automated_description_generation
+Version: 1.2.0.dev1+g6107c27
+Summary: Automated Generation Description AI-Q example
+Keywords: ai,rag,agents
+Classifier: Programming Language :: Python
+Requires-Python: <3.13,>=3.11
+Requires-Dist: aiqtoolkit[langchain]~=1.1
+Requires-Dist: lxml~=5.4

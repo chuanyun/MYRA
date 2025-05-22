@@ -1,0 +1,2 @@
+[aiq.components]
+text_file_ingest = text_file_ingest.register

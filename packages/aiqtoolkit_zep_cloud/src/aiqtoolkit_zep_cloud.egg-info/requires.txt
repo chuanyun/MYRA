@@ -1,0 +1,2 @@
+aiqtoolkit~=1.1
+zep-cloud~=2.2.0

@@ -1,0 +1,107 @@
+general:
+  use_uvloop: true
+
+functions:
+  wiki_search:
+    _type: wiki_search
+    max_results: 2
+  wiki_agent:
+    _type: react_agent
+    llm_name: nim_llm
+    tool_names: [wiki_search]
+    description: 'Useful for Wikipedia search.'
+
+  weather_query:
+    _type: webpage_query
+    webpage_url: https://weather.com/weather/today/l/Atlanta+GA?canonicalCityId=5e31d30099c21fa9f77280443980bc98
+    description: "Search for information about weather. For any questions about weather, you must use this tool!"
+    embedder_name: nim_embedder
+    chunk_size: 512
+  market_query:
+    _type: webpage_query
+    webpage_url: https://finance.yahoo.com/
+    description: "Search for information about stock market. For any questions about stocks, you must use this tool!"
+    embedder_name: nim_embedder
+    chunk_size: 512
+  current_datetime:
+    _type: current_datetime
+  news_agent:
+    _type: react_agent
+    llm_name: nim_llm
+    tool_names:
+      - weather_query
+      - market_query
+      - current_datetime
+    description: 'Useful for weather and stocks news.'
+
+  poem_documents:
+    _type: text_file_ingest
+    ingest_glob: MyPersonalizedAgent/poem_data/*.txt
+    description: "Search for information about Poems. For any questions about poems in English and Chinese, you must use this tool!"
+    embedder_name: nim_embedder
+    chunk_size: 512
+  poem_agent:
+    _type: tool_calling_agent
+    tool_names: [poem_documents]
+    llm_name: nim_llm
+    verbose: true
+    handle_parsing_errors: true
+    max_retries: 2
+    description: 'Useful for poem information.'  
+  reasoning_agent:
+    _type: reasoning_agent
+    llm_name: nim_llm
+    augmented_fn: poem_agent
+    verbose: true
+    instruction_prompt_template: |
+      Answer the following question based on message history: {input_text} 
+      Here is a plan for execution that you could use to guide you: {reasoning_output}
+      NOTE: Remember to follow your guidance on how to format output, etc.
+      You must respond in the same language as the question that may need translation from English to Chinese or from Chinese to English.
+
+  poem_react_agent:
+    _type: react_agent
+    tool_names: [poem_documents]
+    llm_name: nim_llm
+    verbose: true
+    retry_parsing_errors: true
+    max_retries: 3
+    system_prompt: |
+      Answer the following questions as best you can. You may ask the human to use the following tools:
+      {tools}
+      You may respond in one of two formats.
+      Use the following format exactly to ask the human to use a tool:
+      
+      Question: the input question you must answer
+      Thought: you should always think about what to do
+      Action: the action to take, should be one of [{tool_names}]
+      Action Input: the input to the action (if there is no required input, include "Action Input: None")  
+      Observation: wait for the human to respond with the result from the tool, do not assume the response
+      ... (this Thought/Action/Action Input/Observation can repeat N times. If you do not need to use a tool, or after asking the human to use any tools and waiting for the human to respond, you might know the final answer.)
+      Prepare the final answer to the same language as the original input question.
+      Use the following format once you have the final answer:
+      
+      Thought: I now know the final answer
+      Final Answer: the final answer to the original input question and the outputs from the tool called
+  
+    
+
+llms:
+  nim_llm:
+    _type: nim
+    model_name : meta/llama-3.1-70b-instruct #meta/llama-3.1-405b-instruct
+    temperature: 0.0
+
+embedders:
+  nim_embedder:
+    _type: nim
+    model_name: nvidia/nv-embedqa-e5-v5
+    truncate: END
+
+workflow:
+  _type: multi_frameworks
+  llm : nim_llm
+  data_dir : ./examples/multi_frameworks/README.md
+  rag_tool: poem_react_agent #poem_agent
+  research_tool: wiki_agent
+  chitchat_agent: news_agent
